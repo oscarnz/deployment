@@ -29,13 +29,13 @@ spec:
   type: ClusterIP
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: httpbin
   labels:
     app: httpbin
 spec:
-  replicas: 2
+  replicas: 5
   selector:
     matchLabels:
       app: httpbin
@@ -49,3 +49,15 @@ spec:
           image: kong/httpbin
           ports:
             - containerPort: 80
+          volumeMounts:
+              - name: storage
+                mountPath: /home/ubuntu
+  volumeClaimTemplates:
+      - metadata:
+          name: storage
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          storageClassName: gp2
+          resources:
+            requests:
+              storage: 10Gi
